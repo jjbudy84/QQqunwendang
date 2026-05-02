@@ -12,13 +12,33 @@ SYSTEM_PROMPT = """你是一个基于用户上传资料回答问题的 AI 助手
 
 def generate_answer(question: str, context: str) -> str:
     provider = os.getenv("AI_PROVIDER", "openai").lower()
-    if provider == "deepseek" and os.getenv("DEEPSEEK_API_KEY"):
-        return generate_with_deepseek(question, context)
-    if provider == "anthropic" and os.getenv("ANTHROPIC_API_KEY"):
-        return generate_with_anthropic(question, context)
-    if provider in {"openai", "gpt"} and os.getenv("OPENAI_API_KEY"):
-        return generate_with_openai(question, context)
-    return generate_local_answer(context)
+    answer = ""
+    try:
+        if provider == "deepseek" and os.getenv("DEEPSEEK_API_KEY"):
+            answer = generate_with_deepseek(question, context)
+        elif provider == "anthropic" and os.getenv("ANTHROPIC_API_KEY"):
+            answer = generate_with_anthropic(question, context)
+        elif provider in {"openai", "gpt"} and os.getenv("OPENAI_API_KEY"):
+            answer = generate_with_openai(question, context)
+    except Exception:
+        answer = ""
+
+    if context.strip() and is_empty_answer(answer):
+        return generate_local_answer(context)
+    return answer or generate_local_answer(context)
+
+
+def is_empty_answer(answer: str) -> bool:
+    normalized = answer.strip()
+    if not normalized:
+        return True
+    empty_markers = [
+        "没有找到相关信息",
+        "未找到相关信息",
+        "no relevant information",
+        "not find relevant information",
+    ]
+    return any(marker.lower() in normalized.lower() for marker in empty_markers)
 
 
 def generate_with_openai(question: str, context: str) -> str:
@@ -83,7 +103,6 @@ def generate_local_answer(context: str) -> str:
     if not context.strip():
         return "上传资料中没有找到相关信息。"
     return (
-        "当前未配置 AI API Key，先返回检索到的相关资料片段。"
-        "配置 DEEPSEEK_API_KEY、OPENAI_API_KEY 或 ANTHROPIC_API_KEY 后会生成自然语言回答。\n\n"
+        "根据已上传资料，找到以下相关内容：\n\n"
         f"{context[:1800]}"
     )

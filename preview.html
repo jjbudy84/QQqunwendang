@@ -251,6 +251,64 @@
     }
     .batch-btn:disabled { color: #aaa; background: #f5f5f5; cursor: default; }
     .batch-btn.danger:not(:disabled) { color: #c02d2d; border-color: #efc0c0; }
+
+    @media (max-width: 720px) {
+      html, body { overflow: hidden; }
+      body { display: block; }
+      .qq-window {
+        width: 100vw; height: 100dvh; border: 0; border-radius: 0;
+        transform: none !important; transform-origin: top left;
+      }
+      .topbar, .sessions, .rail, .actions .icon-btn:not(#groupAppsBtn) { display: none; }
+      .main { height: 100%; }
+      .chat { width: 100%; flex: 1 1 auto; }
+      .chat-head { height: 64px; flex-basis: 64px; padding: 0 16px; }
+      h1 { font-size: 20px; }
+      .actions { gap: 12px; }
+      .apps-menu { top: 56px; right: 12px; }
+      .messages { inset: 0 0 250px 0; padding: 16px; }
+      .bubble { max-width: 86%; font-size: 15px; }
+      .split { bottom: 250px; }
+      .toolbar { left: 16px; right: 16px; bottom: 200px; height: 44px; }
+      .tools-left { gap: 14px; }
+      textarea { left: 16px; right: 16px; bottom: 64px; height: 128px; font-size: 16px; }
+      .send-wrap { right: 16px; bottom: 14px; }
+      .send { width: 112px; height: 42px; border-radius: 12px; font-size: 17px; }
+      .send span { width: 70px; }
+      .send-arrow { width: 42px; }
+      .mention-panel { left: 16px; right: 16px; bottom: 192px; width: auto; }
+      .file-titlebar { height: 58px; }
+      .file-search { display: none; }
+      .file-window-controls { top: 12px; right: 14px; gap: 16px; }
+      .file-content { height: calc(100% - 58px); padding: 16px 14px 0; }
+      .file-top-row { height: auto; gap: 10px; margin-bottom: 14px; }
+      .back-btn { width: 96px; height: 40px; border-radius: 12px; font-size: 16px; }
+      .crumb { font-size: 16px; }
+      .doc-card { height: auto; min-height: 76px; padding: 12px 14px; margin-bottom: 14px; border-radius: 8px; }
+      .doc-title { font-size: 17px; line-height: 24px; }
+      .doc-sub { font-size: 14px; line-height: 20px; }
+      .list-card { max-height: calc(100dvh - 260px); }
+      .list-head { height: 52px; padding: 0 12px; }
+      .section-label, .folder-name { font-size: 16px; }
+      .sort-btn { width: auto; min-width: 108px; height: 34px; font-size: 14px; }
+      .folder-row, .file-row {
+        height: 92px; grid-template-columns: 28px 58px minmax(0, 1fr);
+        padding: 0 12px;
+      }
+      .folder-meta, .file-meta { display: none; }
+      .folder-icon { width: 44px; height: 31px; margin-top: 27px; }
+      .folder-icon::before { width: 21px; height: 8px; top: -7px; }
+      .folder-icon::after { width: 40px; height: 7px; top: -3px; left: 4px; }
+      .file-icon { width: 40px; height: 48px; margin-top: 22px; }
+      .folder-copy { margin-top: 16px; }
+      .folder-count, .file-size { font-size: 14px; }
+      .file-footer { height: 78px; padding: 0 14px; }
+      .quota { gap: 10px; font-size: 14px; }
+      .usage { min-width: 0; }
+      .usage::before { display: none; }
+      .upload-btn, .new-folder-btn { width: 86px; height: 42px; border-radius: 12px; font-size: 16px; }
+      .new-folder-btn { width: 92px; }
+    }
   </style>
 </head>
 <body>
@@ -448,9 +506,17 @@
       folders: [
         { id: "subject", name: "学科库", parentId: "root", updatedAt: "12:34" }
       ],
-      files: []
+      files: [
+        { id: "seed-english", name: "英语.docx", size: 10840, folderId: "subject", updatedAt: "12:34" },
+        { id: "seed-japanese", name: "日语.docx", size: 10650, folderId: "subject", updatedAt: "12:34" },
+        { id: "seed-ai", name: "人工智能.docx", size: 10747, folderId: "subject", updatedAt: "12:34" },
+        { id: "seed-software", name: "软件工程.docx", size: 10722, folderId: "subject", updatedAt: "12:34" },
+        { id: "seed-dorm", name: "寝室.docx", size: 11115, folderId: "subject", updatedAt: "12:34" },
+        { id: "seed-class", name: "班级.docx", size: 10839, folderId: "subject", updatedAt: "12:34" },
+        { id: "seed-training", name: "军训活动.docx", size: 10926, folderId: "subject", updatedAt: "12:34" }
+      ]
     };
-    const STORAGE_KEY = "qq_group_file_state_v1";
+    const STORAGE_KEY = "qq_group_file_state_v2";
     let fileState = defaultFileState;
     try {
       fileState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultFileState;
@@ -459,6 +525,10 @@
     }
 
     function fitWindowToViewport() {
+      if (window.innerWidth <= 720) {
+        qqWindow.style.setProperty("--app-scale", "1");
+        return;
+      }
       const scale = Math.min(window.innerWidth / 1173, window.innerHeight / 963);
       qqWindow.style.setProperty("--app-scale", scale.toString());
     }

@@ -7,8 +7,12 @@ __pycache__/
 server.log
 server.err.log
 
-uploads/
-data/
+uploads/*
+!uploads/.gitkeep
+!uploads/uploaded_file*.docx
+data/*
+!data/.gitkeep
+!data/vector_index.json
 output/
 
 .DS_Store

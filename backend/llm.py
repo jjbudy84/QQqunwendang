@@ -101,8 +101,16 @@ def generate_with_anthropic(question: str, context: str) -> str:
 
 def generate_local_answer(context: str) -> str:
     if not context.strip():
-        return "上传资料中没有找到相关信息。"
+        return (
+            "暂时还没有找到能回答这个问题的资料。\n\n"
+            "推荐热门问题：\n"
+            "英语口语训练是什么时候？\n"
+            "人工智能项目怎么提交？\n"
+            "软件工程项目文档包含哪些内容？\n"
+            "寝室卫生检查是哪几天？"
+        )
     return (
-        "根据已上传资料，找到以下相关内容：\n\n"
+        "我先帮你从群文件里找到了这些相关内容，你可以继续追问具体时间、比例或要求。\n\n"
+        "推荐热门问题：英语口语训练是什么时候？人工智能项目怎么提交？寝室卫生检查是哪几天？\n\n"
         f"{context[:1800]}"
     )
